@@ -86,10 +86,10 @@ Enhance your WooCommerce store with professional quote requests and instant What
 
 
 == Upgrade Notice ==
-建议所有用户升级到1.1版本以获得WhatsApp集成和增强的安全功能。
+
 
 == Developer Docs ==
-GitHub仓库: [https://github.com/hwc0212/woocommerce-quote-system](https://github.com/hwc0212/woocommerce-quote-system)
+GitHub仓库: https://github.com/hwc0212/woocommerce-quote-system
 
 = 可用钩子 =
 - `wqs_before_button_container`
@@ -105,4 +105,4 @@ return $classes;
 
 == Support ==
 请通过GitHub Issues提交问题：  
-[https://github.com/hwc0212/woocommerce-quote-system/issues](https://github.com/hwc0212/woocommerce-quote-system/issues)
+https://github.com/hwc0212/woocommerce-quote-system/issues
