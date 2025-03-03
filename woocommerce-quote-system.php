@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WooCommerce Quote System
  * Description: Add quote functionality to WooCommerce
- * Version: 2.0.7
+ * Version: 2.2.1
  * Author: huwencai.com
  * Text Domain: wqs
  */
@@ -39,6 +39,13 @@ class WooCommerce_Quote_System {
 
     public function admin_scripts($hook) {
         if ('woocommerce_page_wqs-settings' !== $hook) return;
+		
+		wp_enqueue_style(
+			'wqs-admin',
+			WQS_PLUGIN_URL . 'assets/css/admin.css',
+			[],
+			filemtime(WQS_PLUGIN_PATH . 'assets/css/admin.css')
+		);
         
         wp_enqueue_script(
             'wqs-admin',
