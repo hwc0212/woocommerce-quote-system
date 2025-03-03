@@ -20,18 +20,21 @@ class WQS_Frontend_Handler {
             remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30);
         }
 
-        // 添加报价按钮
-        if (!empty($this->options['enable_quote_button']) && !empty($this->options['form_shortcode'])) {
-            add_action('woocommerce_single_product_summary', [$this, 'add_quote_button'], 35);
-            add_action('wp_footer', [$this, 'quote_modal']);
-            add_action('wp_enqueue_scripts', [$this, 'register_assets']);
-        }
-        
-        // 添加WhatsApp按钮
-        if (!empty($this->options['enable_whatsapp']) && !empty($this->options['whatsapp_number'])) {
-            add_action('woocommerce_single_product_summary', [$this, 'add_whatsapp_button'], 36);
-        }
+		// 统一按钮初始化逻辑
+		if ($this->should_show_buttons()) {
+			add_action('woocommerce_single_product_summary', [$this, 'render_buttons'], 35);
+			add_action('wp_footer', [$this, 'quote_modal']);
+			add_action('wp_enqueue_scripts', [$this, 'register_assets']);
+		}
     }
+	
+	// 新增辅助方法
+	private function should_show_buttons() {
+		$show_quote = !empty($this->options['enable_quote']) && !empty($this->options['form_shortcode']);
+		$show_whatsapp = !empty($this->options['enable_whatsapp']) && !empty($this->options['whatsapp_number']);
+		
+		return $show_quote || $show_whatsapp;
+	}
 
     public function register_assets() {
         // 加载Dashicons字体
@@ -59,44 +62,53 @@ class WQS_Frontend_Handler {
         return '';
     }
 
-    public function add_quote_button() {
-        echo '<button class="wqs-quote-button button alt">'.esc_html__('Get Quote', 'wqs').'</button>';
-    }
+	public function quote_modal() {
+		if (empty($this->options['form_shortcode'])) return;
+		
+		echo '
+		<div id="wqs-quote-modal" class="wqs-modal">
+			<div class="wqs-modal-overlay"></div>
+			<div class="wqs-modal-content">
+				<h2 class="wqs-modal-title">Request a Quote</h2> <!-- 添加标题 -->
+				<span class="wqs-close">&times;</span>
+				<div class="wqs-form-container">
+					'.do_shortcode($this->options['form_shortcode']).'
+				</div>
+			</div>
+		</div>';
+	}
 
-    public function quote_modal() {
-        $shortcode = $this->options['form_shortcode'] ?? '';
-        ?>
-        <div id="wqs-quote-modal" class="wqs-modal">
-            <div class="wqs-modal-overlay"></div>
-            <div class="wqs-modal-content">
-                <span class="wqs-close">&times;</span>
-                <div class="wqs-form-container">
-                    <?php 
-                    // 调试输出
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        error_log('[WQS] Rendering shortcode: ' . $shortcode);
-                    }
-                    echo do_shortcode($shortcode); 
-                    ?>
-                </div>
-            </div>
-        </div>
-        <?php
-    }
+	public function render_buttons() {
+		echo '<div class="wqs-button-container">';
 
-    public function add_whatsapp_button() {
-        $number = $this->options['whatsapp_number'] ?? '';
-        if (empty($number)) return;
+		// 报价按钮
+		if (!empty($this->options['enable_quote']) && !empty($this->options['form_shortcode'])) {
+			echo '<button class="wqs-quote-button button alt">';
+			echo '<span class="dashicons dashicons-email wqs-icon"></span>';
+			echo esc_html__('Get Quote', 'wqs');
+			echo '</button>';
+		}
 
-        $current_url = rawurlencode(get_permalink());
-        $message = rawurlencode(__("I'm interested in this product: ", 'wqs'));
-        
-        echo sprintf(
-            '<a href="%s" class="wqs-whatsapp-button button alt" target="_blank" rel="noopener noreferrer">
-                <span class="dashicons dashicons-whatsapp"></span> %s
-            </a>',
-            esc_url('https://wa.me/'.$number.'?text='.$message.$current_url),
-            esc_html__('Chat via WhatsApp', 'wqs')
-        );
-    }
+		// WhatsApp按钮
+		if (!empty($this->options['enable_whatsapp']) && !empty($this->options['whatsapp_number'])) {
+			$number = $this->options['whatsapp_number'];
+			$current_url = rawurlencode(get_permalink());
+			$message = rawurlencode(__("I'm interested in this product: ", 'wqs'));
+			
+			if (strpos($number, '+') === 0) {
+				$number_for_url = '+' . rawurlencode(substr($number, 1));
+			} else {
+				$number_for_url = rawurlencode($number);
+			}
+			
+			$whatsapp_url = 'https://wa.me/' . $number_for_url . '?text=' . $message . $current_url;
+			
+			echo '<a href="' . esc_url($whatsapp_url) . '" class="wqs-whatsapp-button button alt" target="_blank">';
+			echo '<span class="dashicons dashicons-whatsapp wqs-icon"></span>';
+			echo esc_html__('Chat via WhatsApp', 'wqs');
+			echo '</a>';
+		}
+
+		echo '</div>';
+	}
 }
