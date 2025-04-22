@@ -22,6 +22,7 @@ class WooCommerce_Quote_System {
     private function init_hooks() {
         add_action('plugins_loaded', array($this, 'check_dependencies'));
         add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
+        register_activation_hook(__FILE__, array($this, 'activate_plugin')); // 添加激活钩子
     }
 
     public function check_dependencies() {
@@ -60,6 +61,21 @@ class WooCommerce_Quote_System {
         echo '<div class="error"><p>';
         printf(__('WooCommerce Quote System requires WooCommerce to be installed and active.'));
         echo '</p></div>';
+    }
+
+    public function activate_plugin() {
+        $default_options = array(
+            'hide_prices' => 0,
+            'hide_cart_button' => 0,
+            'enable_quote' => 0,
+            'form_shortcode' => '',
+            'enable_whatsapp' => 0,
+            'whatsapp_number' => ''
+        );
+        $current_options = get_option('wqs_options');
+        if (empty($current_options)) {
+            update_option('wqs_options', $default_options);
+        }
     }
 }
 
