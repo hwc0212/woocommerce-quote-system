@@ -1,82 +1,116 @@
 <?php
 /**
  * Plugin Name: WooCommerce Quote System
- * Description: Add quote functionality to WooCommerce
- * Version: 2.2.1
+ * Plugin URI: https://github.com/hwc0212/woocommerce-quote-system
+ * Description: Transform WooCommerce into a simple quote request system by hiding shopping features and adding quote forms.
+ * Version: 1.5.1
  * Author: huwencai.com
- * Text Domain: wqs
+ * Author URI: https://huwencai.com
+ * Text Domain: woocommerce-quote-system
+ * Domain Path: /languages
+ * Requires at least: 5.0
+ * Tested up to: 6.4
+ * WC requires at least: 5.0
+ * WC tested up to: 8.5
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Network: false
+ * GitHub Plugin URI: hwc0212/woocommerce-quote-system
  */
 
-defined('ABSPATH') || exit;
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-// 定义插件常量
-define('WQS_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('WQS_PLUGIN_URL', plugin_dir_url(__FILE__));
+// Define plugin constants
+define('WCQS_VERSION', '1.5.1');
+define('WCQS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('WCQS_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('WCQS_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-class WooCommerce_Quote_System {
+/**
+ * Check if WooCommerce is active and initialize plugin
+ */
+add_action('plugins_loaded', 'wcqs_check_woocommerce');
 
-    public function __construct() {
-        $this->init_hooks();
+function wcqs_check_woocommerce() {
+    if (!class_exists('WooCommerce')) {
+        add_action('admin_notices', 'wcqs_woocommerce_missing_notice');
+        return;
     }
+    
+    // Initialize plugin
+    wcqs_init();
+}
 
-    private function init_hooks() {
-        add_action('plugins_loaded', array($this, 'check_dependencies'));
-        add_action('admin_enqueue_scripts', array($this, 'admin_scripts'));
-        register_activation_hook(__FILE__, array($this, 'activate_plugin')); // 添加激活钩子
-    }
+/**
+ * Display admin notice when WooCommerce is not active
+ */
+function wcqs_woocommerce_missing_notice() {
+    $message = sprintf(
+        /* translators: %s: WooCommerce plugin name */
+        __('WooCommerce Quote System requires %s plugin to work properly.', 'woocommerce-quote-system'),
+        '<strong>WooCommerce</strong>'
+    );
+    
+    echo '<div class="notice notice-error"><p>' . wp_kses_post($message) . '</p></div>';
+}
 
-    public function check_dependencies() {
-        if (!class_exists('WooCommerce')) {
-            add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
-            return;
-        }
-        
-        require_once WQS_PLUGIN_PATH . 'includes/admin-settings.php';
-        require_once WQS_PLUGIN_PATH . 'includes/frontend-handler.php';
-        
-        new WQS_Admin_Settings();
-        new WQS_Frontend_Handler();
-    }
+/**
+ * Initialize plugin classes
+ */
+function wcqs_init() {
+    // Load plugin classes
+    require_once WCQS_PLUGIN_PATH . 'includes/class-wcqs-main.php';
+    require_once WCQS_PLUGIN_PATH . 'includes/class-wcqs-admin.php';
+    require_once WCQS_PLUGIN_PATH . 'includes/class-wcqs-frontend.php';
+    
+    // Initialize main class
+    new WCQS_Main();
+}
 
-    public function admin_scripts($hook) {
-        if ('woocommerce_page_wqs-settings' !== $hook) return;
-		
-		wp_enqueue_style(
-			'wqs-admin',
-			WQS_PLUGIN_URL . 'assets/css/admin.css',
-			[],
-			filemtime(WQS_PLUGIN_PATH . 'assets/css/admin.css')
-		);
-        
-        wp_enqueue_script(
-            'wqs-admin',
-            WQS_PLUGIN_URL . 'assets/js/admin.js',
-            array('jquery'),
-            '1.0',
-            true
-        );
-    }
-
-    public function woocommerce_missing_notice() {
-        echo '<div class="error"><p>';
-        printf(__('WooCommerce Quote System requires WooCommerce to be installed and active.'));
-        echo '</p></div>';
-    }
-
-    public function activate_plugin() {
-        $default_options = array(
-            'hide_prices' => 0,
-            'hide_cart_button' => 0,
-            'enable_quote' => 0,
-            'form_shortcode' => '',
-            'enable_whatsapp' => 0,
-            'whatsapp_number' => ''
-        );
-        $current_options = get_option('wqs_options');
-        if (empty($current_options)) {
-            update_option('wqs_options', $default_options);
-        }
+/**
+ * Plugin activation hook
+ */
+register_activation_hook(__FILE__, 'wcqs_activate');
+function wcqs_activate() {
+    // Create default settings
+    $default_options = array(
+        'enable_plugin' => 'yes',
+        'hide_price' => 'yes',
+        'hide_add_to_cart' => 'yes',
+        'hide_shopping_elements' => 'yes',
+        'enable_quote_modal' => 'yes',
+        'enable_whatsapp' => 'no',
+        'contact_form_shortcode' => '',
+        'whatsapp_number' => '',
+        'quote_button_text' => 'Get Quote',
+        'whatsapp_button_text' => 'WhatsApp',
+        'modal_title' => 'Product Quote',
+        'modal_subtitle' => ''
+    );
+    
+    // Only add options if they don't exist
+    if (!get_option('wcqs_settings')) {
+        add_option('wcqs_settings', $default_options);
     }
 }
 
-new WooCommerce_Quote_System();
+/**
+ * Plugin deactivation hook
+ */
+register_deactivation_hook(__FILE__, 'wcqs_deactivate');
+function wcqs_deactivate() {
+    // Clean up if needed
+    // Note: We don't delete settings on deactivation to preserve user configuration
+}
+
+/**
+ * Plugin uninstall hook
+ */
+register_uninstall_hook(__FILE__, 'wcqs_uninstall');
+function wcqs_uninstall() {
+    // Clean up plugin data on uninstall
+    delete_option('wcqs_settings');
+}
