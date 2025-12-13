@@ -1,0 +1,143 @@
+# Copyright (C) 2024 huwencai.com
+# This file is distributed under the same license as the WooCommerce Quote System plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Quote System 1.5.1\n"
+"Report-Msgid-Bugs-To: https://github.com/hwc0212/woocommerce-quote-system\n"
+"POT-Creation-Date: 2024-12-13 12:00+0000\n"
+"PO-Revision-Date: 2024-12-13 12:00+0000\n"
+"Last-Translator: huwencai.com\n"
+"Language-Team: Chinese (China)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: woocommerce-quote-system.php:45
+msgid "WooCommerce Quote System requires %s plugin to work properly."
+msgstr "WooCommerce Quote System 需要 %s 插件才能正常工作。"
+
+#: includes/class-wcqs-admin.php:18
+msgid "WooCommerce Quote System Settings"
+msgstr "WooCommerce Quote System 设置"
+
+#: includes/class-wcqs-admin.php:19
+msgid "WC Quote System"
+msgstr "WC Quote System"
+
+#: includes/class-wcqs-admin.php:29
+msgid "General Settings"
+msgstr "基本设置"
+
+#: includes/class-wcqs-admin.php:35
+msgid "Enable Plugin"
+msgstr "启用插件"
+
+#: includes/class-wcqs-admin.php:42
+msgid "Hide Price"
+msgstr "隐藏价格"
+
+#: includes/class-wcqs-admin.php:49
+msgid "Hide Add to Cart Button"
+msgstr "隐藏添加到购物车按钮"
+
+#: includes/class-wcqs-admin.php:56
+msgid "Hide Shopping Elements"
+msgstr "隐藏购物元素"
+
+#: includes/class-wcqs-admin.php:63
+msgid "Enable Quote Modal"
+msgstr "启用报价弹窗"
+
+#: includes/class-wcqs-admin.php:70
+msgid "Form Shortcode"
+msgstr "表单短代码"
+
+#: includes/class-wcqs-admin.php:77
+msgid "Enable WhatsApp"
+msgstr "启用WhatsApp"
+
+#: includes/class-wcqs-admin.php:84
+msgid "WhatsApp Number"
+msgstr "WhatsApp 号码"
+
+#: includes/class-wcqs-admin.php:91
+msgid "Quote Button Text"
+msgstr "报价按钮文字"
+
+#: includes/class-wcqs-admin.php:98
+msgid "WhatsApp Button Text"
+msgstr "WhatsApp按钮文字"
+
+#: includes/class-wcqs-admin.php:105
+msgid "Modal Title"
+msgstr "弹窗标题"
+
+#: includes/class-wcqs-admin.php:112
+msgid "Modal Subtitle"
+msgstr "弹窗副标题"
+
+#: includes/class-wcqs-admin.php:110
+msgid "Save Settings"
+msgstr "保存设置"
+
+#: includes/class-wcqs-admin.php:116
+msgid "Enable WooCommerce Quote System functionality"
+msgstr "启用WooCommerce Quote System功能"
+
+#: includes/class-wcqs-admin.php:117
+msgid "Master switch to enable/disable all plugin features"
+msgstr "主开关，用于启用/禁用所有插件功能"
+
+#: includes/class-wcqs-admin.php:120
+msgid "Title displayed at the top of the quote modal"
+msgstr "显示在询价弹窗顶部的标题"
+
+#: includes/class-wcqs-admin.php:123
+msgid "Hide product price display"
+msgstr "隐藏产品价格显示"
+
+#: includes/class-wcqs-admin.php:127
+msgid "Optional subtitle displayed below the title (leave empty to hide)"
+msgstr "显示在标题下方的可选副标题（留空则隐藏）"
+
+#: includes/class-wcqs-admin.php:130
+msgid "Hide add to cart button and replace with quote button"
+msgstr "隐藏添加到购物车按钮并替换为报价按钮"
+
+#: includes/class-wcqs-admin.php:137
+msgid "Hide cart, checkout and other shopping elements"
+msgstr "隐藏购物车、结账和其他购物元素"
+
+#: includes/class-wcqs-admin.php:144
+msgid "Enable quote modal popup with form"
+msgstr "启用带表单的报价弹窗"
+
+#: includes/class-wcqs-admin.php:151
+msgid "Enter any form plugin shortcode, e.g.: [contact-form-7 id=\"123\"] or [wpforms id=\"456\"]"
+msgstr "输入任何表单插件的短代码，例如：[contact-form-7 id=\"123\"] 或 [wpforms id=\"456\"] 等"
+
+#: includes/class-wcqs-admin.php:158
+msgid "Enable WhatsApp consultation button"
+msgstr "启用WhatsApp咨询按钮"
+
+#: includes/class-wcqs-admin.php:165
+msgid "Enter WhatsApp number with country code, e.g.: 8613800138000"
+msgstr "输入WhatsApp号码，包含国家代码，例如：8613800138000"
+
+#: includes/class-wcqs-admin.php:200
+msgid "Settings"
+msgstr "设置"
+
+#: includes/class-wcqs-frontend.php:75
+msgid "Product Quote"
+msgstr "产品询价"
+
+#: includes/class-wcqs-frontend.php:85
+msgid "Please configure form shortcode in plugin settings"
+msgstr "请在插件设置中配置表单短代码"
+
+#: includes/class-wcqs-frontend.php:110
+msgid "Hello, I'm interested in this product: %s - %s"
+msgstr "你好，我对这个产品感兴趣：%s - %s"
