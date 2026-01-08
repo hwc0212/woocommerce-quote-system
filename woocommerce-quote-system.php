@@ -3,7 +3,7 @@
  * Plugin Name: WooCommerce Quote System
  * Plugin URI: https://github.com/hwc0212/woocommerce-quote-system
  * Description: Transform WooCommerce into a simple quote request system by hiding shopping features and adding quote forms.
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: huwencai.com
  * Author URI: https://huwencai.com
  * Text Domain: woocommerce-quote-system
@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WCQS_VERSION', '1.5.1');
+define('WCQS_VERSION', '1.5.2');
 define('WCQS_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WCQS_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('WCQS_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -75,6 +75,17 @@ function wcqs_init() {
  */
 register_activation_hook(__FILE__, 'wcqs_activate');
 function wcqs_activate() {
+    // Check WordPress and WooCommerce versions
+    if (version_compare(get_bloginfo('version'), '5.0', '<')) {
+        deactivate_plugins(plugin_basename(__FILE__));
+        wp_die(__('WooCommerce Quote System requires WordPress 5.0 or higher.', 'woocommerce-quote-system'));
+    }
+    
+    if (!class_exists('WooCommerce')) {
+        deactivate_plugins(plugin_basename(__FILE__));
+        wp_die(__('WooCommerce Quote System requires WooCommerce plugin to be installed and activated.', 'woocommerce-quote-system'));
+    }
+    
     // Create default settings
     $default_options = array(
         'enable_plugin' => 'yes',
@@ -85,9 +96,9 @@ function wcqs_activate() {
         'enable_whatsapp' => 'no',
         'contact_form_shortcode' => '',
         'whatsapp_number' => '',
-        'quote_button_text' => 'Get Quote',
-        'whatsapp_button_text' => 'WhatsApp',
-        'modal_title' => 'Product Quote',
+        'quote_button_text' => __('Get Quote', 'woocommerce-quote-system'),
+        'whatsapp_button_text' => __('WhatsApp', 'woocommerce-quote-system'),
+        'modal_title' => __('Product Quote', 'woocommerce-quote-system'),
         'modal_subtitle' => ''
     );
     
@@ -95,6 +106,12 @@ function wcqs_activate() {
     if (!get_option('wcqs_settings')) {
         add_option('wcqs_settings', $default_options);
     }
+    
+    // Set activation flag for welcome notice
+    set_transient('wcqs_activation_notice', true, 30);
+    
+    // Clear any cached data
+    wp_cache_flush();
 }
 
 /**
@@ -102,7 +119,14 @@ function wcqs_activate() {
  */
 register_deactivation_hook(__FILE__, 'wcqs_deactivate');
 function wcqs_deactivate() {
-    // Clean up if needed
+    // Clear any cached data
+    wp_cache_flush();
+    
+    // Clear settings cache
+    if (class_exists('WCQS_Main')) {
+        WCQS_Main::clear_settings_cache();
+    }
+    
     // Note: We don't delete settings on deactivation to preserve user configuration
 }
 
@@ -113,4 +137,31 @@ register_uninstall_hook(__FILE__, 'wcqs_uninstall');
 function wcqs_uninstall() {
     // Clean up plugin data on uninstall
     delete_option('wcqs_settings');
+    delete_transient('wcqs_activation_notice');
+    
+    // Clear any cached data
+    wp_cache_flush();
+}
+
+/**
+ * Add activation notice
+ */
+add_action('admin_notices', 'wcqs_activation_notice');
+function wcqs_activation_notice() {
+    if (get_transient('wcqs_activation_notice')) {
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p>
+                <?php 
+                printf(
+                    /* translators: %s: Settings page URL */
+                    __('WooCommerce Quote System has been activated! <a href="%s">Configure your settings</a> to get started.', 'woocommerce-quote-system'),
+                    admin_url('options-general.php?page=wcqs-settings')
+                );
+                ?>
+            </p>
+        </div>
+        <?php
+        delete_transient('wcqs_activation_notice');
+    }
 }
